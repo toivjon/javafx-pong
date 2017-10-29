@@ -1,7 +1,9 @@
 package net.toiviainen.pong;
 
 import javafx.application.Application;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import net.toiviainen.pong.scene.WelcomeScene;
 
 /**
  * <p>
@@ -18,6 +20,23 @@ import javafx.stage.Stage;
  */
 public class PongApplication extends Application {
 
+    /** The width of the initial application resolution. */
+    public static final int RESOLUTION_WIDTH = 800;
+
+    /** The height of the initial application resolution. */
+    public static final int RESOLUTION_HEIGHT = 600;
+
+    /** The name of the font used for the application texts. */
+    public static final String FONT_NAME = "Arial";
+
+    /** The font for big texts like topics etc. */
+    public static final Font BIG_FONT = new Font(FONT_NAME, 32);
+
+    /** The font for normal texts like descriptions etc. */
+    public static final Font SMALL_FONT = new Font(FONT_NAME, 18);
+
+    private Stage primaryStage;
+
     @Override
     public void init() throws Exception {
         // ... something here?
@@ -26,8 +45,13 @@ public class PongApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // ... scene construction here?
+        // store the primary stage reference.
+        this.primaryStage = primaryStage;
+
+        // set definitions for the primary stage.
         primaryStage.setTitle("JavaFX - Pong");
+        primaryStage.setScene(new WelcomeScene(this));
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
@@ -35,6 +59,10 @@ public class PongApplication extends Application {
     public void stop() throws Exception {
         // ... something here?
         super.stop();
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     public static void main(String args[]) {
