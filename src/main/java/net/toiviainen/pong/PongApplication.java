@@ -3,7 +3,7 @@ package net.toiviainen.pong;
 import javafx.application.Application;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import net.toiviainen.pong.scene.WelcomeScene;
+import net.toiviainen.pong.scene.CourtScene;
 
 /**
  * <p>
@@ -50,9 +50,11 @@ public class PongApplication extends Application {
 
         // set definitions for the primary stage.
         primaryStage.setTitle("JavaFX - Pong");
-        primaryStage.setScene(new WelcomeScene(this));
         primaryStage.setResizable(false);
         primaryStage.show();
+
+        // TODO primaryStage.setScene(new WelcomeScene(this));
+        primaryStage.setScene(new CourtScene(this));
     }
 
     @Override
