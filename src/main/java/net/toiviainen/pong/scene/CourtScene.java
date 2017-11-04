@@ -46,6 +46,9 @@ public class CourtScene extends AbstractScene {
 	/** A direction constant for being still. */
 	private static final double DIRECTION_NONE = 0.0;
 
+	/** A constant definition for paddle movement speed. */
+	private static final double PADDLE_MOVEMENT_SPEED = 7.5;
+
 	private final Rectangle topWall;
 	private final Rectangle bottomWall;
 
@@ -177,8 +180,8 @@ public class CourtScene extends AbstractScene {
 	public void tick() {
 		ball.setX(ball.getX() + 2.75);
 
-		leftPaddle.setLayoutY(leftPaddle.getLayoutY() + (leftPaddleYDirection * 4.75));
-		rightPaddle.setLayoutY(rightPaddle.getLayoutY() + (rightPaddleYDirection * 4.75));
+		leftPaddle.setLayoutY(leftPaddle.getLayoutY() + (leftPaddleYDirection * PADDLE_MOVEMENT_SPEED));
+		rightPaddle.setLayoutY(rightPaddle.getLayoutY() + (rightPaddleYDirection * PADDLE_MOVEMENT_SPEED));
 
 		Bounds topWallBounds = topWall.getBoundsInParent();
 		Bounds bottomWallBounds = bottomWall.getBoundsInParent();
