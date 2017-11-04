@@ -5,10 +5,10 @@ import static net.toiviainen.pong.PongApplication.RESOLUTION_HEIGHT;
 import static net.toiviainen.pong.PongApplication.RESOLUTION_WIDTH;
 
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import net.toiviainen.pong.PongApplication;
@@ -23,7 +23,7 @@ import net.toiviainen.pong.PongApplication;
  * simulation logics that make the game to act as an real-time application.
  * </p>
  */
-public class CourtScene extends Scene {
+public class CourtScene extends AbstractScene {
 
 	/** The width of the small boxes used around the scene. */
 	private static final int BOX_WIDTH = (RESOLUTION_WIDTH / 40);
@@ -37,6 +37,15 @@ public class CourtScene extends Scene {
 	/** The offset of the paddles from the edges of the scene. */
 	private static final int EDGE_OFFSET = RESOLUTION_HEIGHT / 20;
 
+	/** A direction constant for the upward movement. */
+	private static final double DIRECTION_UP = -1.0;
+
+	/** A direction constant for the downward movement. */
+	private static final double DIRECTION_DOWN = 1.0;
+
+	/** A direction constant for being still. */
+	private static final double DIRECTION_NONE = 0.0;
+
 	private final Rectangle topWall;
 	private final Rectangle bottomWall;
 
@@ -46,6 +55,9 @@ public class CourtScene extends Scene {
 	private final Group centerLine;
 
 	private final Rectangle ball;
+
+	private double leftPaddleYDirection;
+	private double rightPaddleYDirection;
 
 	public CourtScene(PongApplication application) throws NullPointerException {
 		super(new Group(), RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
@@ -110,6 +122,82 @@ public class CourtScene extends Scene {
 		children.add(ball);
 
 		setFill(Color.BLACK);
+
+		// activate the way to active paddle movement.
+		setOnKeyPressed(x -> {
+			switch (x.getCode()) {
+				case UP:
+					rightPaddleYDirection = DIRECTION_UP;
+					break;
+				case DOWN:
+					rightPaddleYDirection = DIRECTION_DOWN;
+					break;
+				case W:
+					leftPaddleYDirection = DIRECTION_UP;
+					break;
+				case S:
+					leftPaddleYDirection = DIRECTION_DOWN;
+					break;
+				default:
+					break;
+			}
+		});
+
+		// active the way to disable paddle movement.
+		setOnKeyReleased(x -> {
+			switch (x.getCode()) {
+				case UP:
+					if (rightPaddleYDirection == DIRECTION_UP) {
+						rightPaddleYDirection = DIRECTION_NONE;
+					}
+					break;
+				case DOWN:
+					if (rightPaddleYDirection == DIRECTION_DOWN) {
+						rightPaddleYDirection = DIRECTION_NONE;
+					}
+					break;
+				case W:
+					if (leftPaddleYDirection == DIRECTION_UP) {
+						leftPaddleYDirection = DIRECTION_NONE;
+					}
+					break;
+				case S:
+					if (leftPaddleYDirection == DIRECTION_DOWN) {
+						leftPaddleYDirection = DIRECTION_NONE;
+					}
+					break;
+				default:
+					break;
+			}
+		});
+
+	}
+
+	@Override
+	public void tick() {
+		ball.setX(ball.getX() + 2.75);
+
+		leftPaddle.setLayoutY(leftPaddle.getLayoutY() + (leftPaddleYDirection * 4.75));
+		rightPaddle.setLayoutY(rightPaddle.getLayoutY() + (rightPaddleYDirection * 4.75));
+
+		Bounds topWallBounds = topWall.getBoundsInParent();
+		Bounds bottomWallBounds = bottomWall.getBoundsInParent();
+
+		// check that the right paddle stays within the scene boundaries.
+		Bounds rightPaddleBounds = rightPaddle.getBoundsInParent();
+		if (rightPaddleBounds.intersects(topWallBounds)) {
+			rightPaddle.setLayoutY(topWall.getLayoutY() + topWall.getHeight() + 0.01);
+		} else if (rightPaddleBounds.intersects(bottomWallBounds)) {
+			rightPaddle.setLayoutY(bottomWallBounds.getMinY() - rightPaddle.getHeight() - 0.01);
+		}
+
+		// check that the left paddle stays within the scene boundaries.
+		Bounds leftPaddleBounds = leftPaddle.getBoundsInParent();
+		if (leftPaddleBounds.intersects(topWallBounds)) {
+			leftPaddle.setLayoutY(topWall.getLayoutY() + topWall.getHeight() + 0.01);
+		} else if (leftPaddleBounds.intersects(bottomWallBounds)) {
+			leftPaddle.setLayoutY(bottomWallBounds.getMinY() - leftPaddle.getHeight() - 0.01);
+		}
 	}
 
 }
