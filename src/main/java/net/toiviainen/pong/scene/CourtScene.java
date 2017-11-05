@@ -37,17 +37,34 @@ public class CourtScene extends AbstractScene {
 	/** The offset of the paddles from the edges of the scene. */
 	private static final int EDGE_OFFSET = RESOLUTION_HEIGHT / 20;
 
+	/** A constant definition for paddle movement speed. */
+	private static final double PADDLE_MOVEMENT_SPEED = 7.5;
+
+	/** The amount to nudge items on a collision. */
+	private static final double NUDGE = 0.01;
+
+	// ================================
+	// = movement direction constants =
+	// ================================
+
 	/** A direction constant for the upward movement. */
 	private static final double DIRECTION_UP = -1.0;
 
 	/** A direction constant for the downward movement. */
 	private static final double DIRECTION_DOWN = 1.0;
 
+	/** A direction constant for the right movement. */
+	private static final double DIRECTION_RIGHT = 1.0;
+
+	/** A direction constant for the left movement. */
+	private static final double DIRECTION_LEFT = -1.0;
+
 	/** A direction constant for being still. */
 	private static final double DIRECTION_NONE = 0.0;
 
-	/** A constant definition for paddle movement speed. */
-	private static final double PADDLE_MOVEMENT_SPEED = 7.5;
+	// ===================
+	// = class variables =
+	// ===================
 
 	private final Rectangle topWall;
 	private final Rectangle bottomWall;
@@ -61,6 +78,10 @@ public class CourtScene extends AbstractScene {
 
 	private double leftPaddleYDirection;
 	private double rightPaddleYDirection;
+
+	private double ballMovementSpeed = 2.75;
+	private double ballXDirection = DIRECTION_RIGHT;
+	private double ballYDirection = DIRECTION_UP;
 
 	public CourtScene(PongApplication application) throws NullPointerException {
 		super(new Group(), RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
@@ -178,28 +199,50 @@ public class CourtScene extends AbstractScene {
 
 	@Override
 	public void tick() {
-		ball.setX(ball.getX() + 2.75);
+		ball.setLayoutX(ball.getLayoutX() + ballMovementSpeed * ballXDirection);
+		ball.setLayoutY(ball.getLayoutY() + ballMovementSpeed * ballYDirection);
 
 		leftPaddle.setLayoutY(leftPaddle.getLayoutY() + (leftPaddleYDirection * PADDLE_MOVEMENT_SPEED));
 		rightPaddle.setLayoutY(rightPaddle.getLayoutY() + (rightPaddleYDirection * PADDLE_MOVEMENT_SPEED));
 
+		// get wall references to check against collisions.
 		Bounds topWallBounds = topWall.getBoundsInParent();
 		Bounds bottomWallBounds = bottomWall.getBoundsInParent();
 
 		// check that the right paddle stays within the scene boundaries.
 		Bounds rightPaddleBounds = rightPaddle.getBoundsInParent();
 		if (rightPaddleBounds.intersects(topWallBounds)) {
-			rightPaddle.setLayoutY(topWall.getLayoutY() + topWall.getHeight() + 0.01);
+			rightPaddle.setLayoutY(topWall.getLayoutY() + topWall.getHeight() + NUDGE);
 		} else if (rightPaddleBounds.intersects(bottomWallBounds)) {
-			rightPaddle.setLayoutY(bottomWallBounds.getMinY() - rightPaddle.getHeight() - 0.01);
+			rightPaddle.setLayoutY(bottomWallBounds.getMinY() - rightPaddle.getHeight() - NUDGE);
 		}
 
 		// check that the left paddle stays within the scene boundaries.
 		Bounds leftPaddleBounds = leftPaddle.getBoundsInParent();
 		if (leftPaddleBounds.intersects(topWallBounds)) {
-			leftPaddle.setLayoutY(topWall.getLayoutY() + topWall.getHeight() + 0.01);
+			leftPaddle.setLayoutY(topWall.getLayoutY() + topWall.getHeight() + NUDGE);
 		} else if (leftPaddleBounds.intersects(bottomWallBounds)) {
-			leftPaddle.setLayoutY(bottomWallBounds.getMinY() - leftPaddle.getHeight() - 0.01);
+			leftPaddle.setLayoutY(bottomWallBounds.getMinY() - leftPaddle.getHeight() - NUDGE);
+		}
+
+		// check whether the ball hits something.
+		Bounds ballBounds = ball.getBoundsInParent();
+		if (ballBounds.intersects(leftPaddleBounds)) {
+			// prevent ball from invading the paddle and set a new direction.
+			ball.setLayoutX(leftPaddleBounds.getMaxX() + NUDGE);
+			ballXDirection = DIRECTION_RIGHT;
+		} else if (ballBounds.intersects(rightPaddleBounds)) {
+			// prevent ball from invading the paddle and set a new direction.
+			ball.setLayoutX(rightPaddleBounds.getMinX() - ball.getWidth() - NUDGE);
+			ballXDirection = DIRECTION_LEFT;
+		} else if (ballBounds.intersects(topWallBounds)) {
+			// prevent ball from invading the wall and set a new direction.
+			ball.setLayoutY(topWall.getLayoutY() + topWall.getHeight() + NUDGE);
+			ballYDirection = DIRECTION_DOWN;
+		} else if (ballBounds.intersects(bottomWallBounds)) {
+			// prevent ball from invading the wall and set a new direction.
+			ball.setLayoutY(bottomWallBounds.getMinY() - ball.getHeight() - NUDGE);
+			ballYDirection = DIRECTION_UP;
 		}
 	}
 
