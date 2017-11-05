@@ -69,6 +69,9 @@ public class CourtScene extends AbstractScene {
 	private final Rectangle topWall;
 	private final Rectangle bottomWall;
 
+	private final Rectangle leftGoal;
+	private final Rectangle rightGoal;
+
 	private final Rectangle leftPaddle;
 	private final Rectangle rightPaddle;
 
@@ -101,6 +104,18 @@ public class CourtScene extends AbstractScene {
 		bottomWall.setWidth(RESOLUTION_WIDTH);
 		bottomWall.setHeight(WALL_HEIGHT);
 		bottomWall.setFill(Color.WHITE);
+
+		leftGoal = new Rectangle();
+		leftGoal.setLayoutX(-RESOLUTION_WIDTH);
+		leftGoal.setLayoutY(0);
+		leftGoal.setWidth(RESOLUTION_WIDTH);
+		leftGoal.setHeight(RESOLUTION_HEIGHT);
+
+		rightGoal = new Rectangle();
+		rightGoal.setLayoutX(RESOLUTION_WIDTH);
+		rightGoal.setLayoutY(0);
+		rightGoal.setWidth(RESOLUTION_WIDTH);
+		rightGoal.setHeight(RESOLUTION_HEIGHT);
 
 		leftPaddle = new Rectangle();
 		leftPaddle.setLayoutX(EDGE_OFFSET);
@@ -140,6 +155,8 @@ public class CourtScene extends AbstractScene {
 		ObservableList<Node> children = rootGroup.getChildren();
 		children.add(topWall);
 		children.add(bottomWall);
+		children.add(leftGoal);
+		children.add(rightGoal);
 		children.add(leftPaddle);
 		children.add(rightPaddle);
 		children.add(centerLine);
@@ -243,6 +260,20 @@ public class CourtScene extends AbstractScene {
 			// prevent ball from invading the wall and set a new direction.
 			ball.setLayoutY(bottomWallBounds.getMinY() - ball.getHeight() - NUDGE);
 			ballYDirection = DIRECTION_UP;
+		} else {
+			// get goal references to check against goals.
+			Bounds leftGoalBounds = leftGoal.getBoundsInParent();
+			Bounds rightGoalBounds = rightGoal.getBoundsInParent();
+
+			if (ballBounds.intersects(leftGoalBounds)) {
+				System.out.println("a score for the right player!");
+				// TODO add a score for the right player.
+				// TODO reset game state.
+			} else if (ballBounds.intersects(rightGoalBounds)) {
+				System.out.println("a score for the left player!");
+				// TODO add a score for the left player.
+				// TODO reset game state.
+			}
 		}
 	}
 
