@@ -301,21 +301,35 @@ public class CourtScene extends AbstractScene {
 			if (ballBounds.intersects(leftGoalBounds)) {
 				player1Score++;
 				setPlayerScore(1, player1Score);
-				// TODO update score indicator
-				ball.setLayoutX(0);
-				ball.setLayoutY(0);
-				// TODO reset game state.
+				reset();
 				// TODO check for the end-game state?
 			} else if (ballBounds.intersects(rightGoalBounds)) {
 				player2Score++;
 				setPlayerScore(2, player2Score);
-				// TODO update score indicator.
-				ball.setLayoutX(0);
-				ball.setLayoutY(0);
-				// TODO reset game state.
+				reset();
 				// TODO check for the end-game state?
 			}
 		}
+	}
+
+	/**
+	 * <p>
+	 * Reset the game state.
+	 * </p>
+	 * <p>
+	 * This function can be used to reset the game position into the default
+	 * position where the ball and the paddles are being repositioned in the
+	 * middle of the screen. Typically used when either player scores a point.
+	 * </p>
+	 */
+	private void reset() {
+		// set the ball back into the middle of the scene.
+		ball.setLayoutX(RESOLUTION_WIDTH / 2 - BOX_WIDTH / 2);
+		ball.setLayoutY(RESOLUTION_HEIGHT / 2 - BOX_WIDTH / 2);
+
+		// set paddles back into the middle of the y-axis.
+		leftPaddle.setLayoutY(RESOLUTION_HEIGHT / 2 - PADDLE_HEIGHT / 2);
+		rightPaddle.setLayoutY(leftPaddle.getLayoutY());
 	}
 
 	/**
