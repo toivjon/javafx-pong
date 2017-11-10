@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import net.toiviainen.pong.PongApplication;
+import net.toiviainen.pong.util.Args;
 
 /**
  * <p>
@@ -62,6 +63,19 @@ public class CourtScene extends AbstractScene {
 	/** A direction constant for being still. */
 	private static final double DIRECTION_NONE = 0.0;
 
+	// =========================================
+	// = number indicator generation constants =
+	// =========================================
+
+	/** The width of a number indicator. */
+	private static final double NUMBER_WIDTH = (RESOLUTION_WIDTH / 10);
+
+	/** The height of a number indicator. */
+	private static final double NUMBER_HEIGHT = (RESOLUTION_HEIGHT / 6);
+
+	/** The thickness of a number indicator number side. */
+	private static final double NUMBER_THICKNESS = NUMBER_HEIGHT / 5;
+
 	// ===================
 	// = class variables =
 	// ===================
@@ -75,6 +89,9 @@ public class CourtScene extends AbstractScene {
 	private final Rectangle leftPaddle;
 	private final Rectangle rightPaddle;
 
+	private final Group leftScoreIndicator;
+	private final Group rightScoreIndicator;
+
 	private final Group centerLine;
 
 	private final Rectangle ball;
@@ -85,6 +102,9 @@ public class CourtScene extends AbstractScene {
 	private double ballMovementSpeed = 2.75;
 	private double ballXDirection = DIRECTION_RIGHT;
 	private double ballYDirection = DIRECTION_UP;
+
+	private int player1Score = 0;
+	private int player2Score = 0;
 
 	public CourtScene(PongApplication application) throws NullPointerException {
 		super(new Group(), RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
@@ -131,6 +151,14 @@ public class CourtScene extends AbstractScene {
 		rightPaddle.setHeight(PADDLE_HEIGHT);
 		rightPaddle.setFill(Color.WHITE);
 
+		leftScoreIndicator = new Group();
+		leftScoreIndicator.setLayoutX(RESOLUTION_WIDTH / 2 - (70 + RESOLUTION_WIDTH / 10));
+		leftScoreIndicator.setLayoutY(RESOLUTION_HEIGHT / 10);
+
+		rightScoreIndicator = new Group();
+		rightScoreIndicator.setLayoutX(RESOLUTION_WIDTH / 2 + 70);
+		rightScoreIndicator.setLayoutY(RESOLUTION_HEIGHT / 10);
+
 		centerLine = new Group();
 		centerLine.setLayoutX(RESOLUTION_WIDTH / 2 - BOX_WIDTH / 2);
 		for (double y = WALL_HEIGHT; y < RESOLUTION_HEIGHT; y += (1.93 * BOX_WIDTH)) {
@@ -159,6 +187,8 @@ public class CourtScene extends AbstractScene {
 		children.add(rightGoal);
 		children.add(leftPaddle);
 		children.add(rightPaddle);
+		children.add(leftScoreIndicator);
+		children.add(rightScoreIndicator);
 		children.add(centerLine);
 		children.add(ball);
 
@@ -212,6 +242,9 @@ public class CourtScene extends AbstractScene {
 			}
 		});
 
+		// assign initial scores and update score indicators.
+		setPlayerScore(1, 0);
+		setPlayerScore(2, 0);
 	}
 
 	@Override
@@ -266,15 +299,145 @@ public class CourtScene extends AbstractScene {
 			Bounds rightGoalBounds = rightGoal.getBoundsInParent();
 
 			if (ballBounds.intersects(leftGoalBounds)) {
-				System.out.println("a score for the right player!");
-				// TODO add a score for the right player.
+				player1Score++;
+				setPlayerScore(1, player1Score);
+				// TODO update score indicator
+				ball.setLayoutX(0);
+				ball.setLayoutY(0);
 				// TODO reset game state.
+				// TODO check for the end-game state?
 			} else if (ballBounds.intersects(rightGoalBounds)) {
-				System.out.println("a score for the left player!");
-				// TODO add a score for the left player.
+				player2Score++;
+				setPlayerScore(2, player2Score);
+				// TODO update score indicator.
+				ball.setLayoutX(0);
+				ball.setLayoutY(0);
 				// TODO reset game state.
+				// TODO check for the end-game state?
 			}
 		}
+	}
+
+	/**
+	 * Set the given score for the target player.
+	 * @param player The index [1|2] of the target player.
+	 * @param score The score [0..9] for the target player.
+	 * @throws IllegalArgumentException On any invalid values.
+	 */
+	private void setPlayerScore(int player, int score) throws IllegalArgumentException {
+		Args.isBetween(player, 1, 2, "The number must be either one or two!");
+		Args.isBetween(score, 0, 9, "The score must be within the [0..9] range!");
+
+		if (player == 1) {
+			ObservableList<Node> children = rightScoreIndicator.getChildren();
+			children.clear();
+			children.add(createNumberGroup(score));
+		} else if (player == 2) {
+			ObservableList<Node> children = leftScoreIndicator.getChildren();
+			children.clear();
+			children.add(createNumberGroup(score));
+		}
+	}
+
+	/**
+	 * Create a new rectangle that is filled with white colour.
+	 * @param x The x-coordinate of the rectangle.
+	 * @param y The y-coordinate of the rectangle.
+	 * @param w The width of the rectangle.
+	 * @param h The height of the rectangle.
+	 * @return A new rectangle filled with white colour.
+	 * @throws IllegalArgumentException Whether any negative values were given.
+	 */
+	private static Rectangle whiteRect(double x, double y, double w, double h) throws IllegalArgumentException {
+		Args.isGte(x, 0, "The x-coordinate must be equal or higher than zero!");
+		Args.isGte(y, 0, "The y-coordinate must be equal or higher than zero!");
+		Args.isGte(w, 0, "The width must be equal or higher than zero!");
+		Args.isGte(h, 0, "The heigh must be equal or higher than zero!");
+
+		// create a new rectangle that is filled with white colour.
+		Rectangle rectangle = new Rectangle(x, y, w, h);
+		rectangle.setFill(Color.WHITE);
+		return rectangle;
+	}
+
+	/**
+	 * Create a new number group to render the provided number [0..9] in JavaFX.
+	 * @param number The number to create.
+	 * @return A new group that can be used to render the provided number.
+	 * @throws IllegalArgumentException Whether any invalid number was given.
+	 */
+	private static Group createNumberGroup(int number) throws IllegalArgumentException {
+		Args.isBetween(number, 0, 9, "The number must be within the [0..9] range!");
+
+		// @formatter:off
+		// construct a new group with the necessary graphics.
+		Group group = new Group();
+		ObservableList<Node> children = group.getChildren();
+		switch (number) {
+			case 0:
+				children.add(whiteRect(0, 0, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(0, 0, NUMBER_THICKNESS, NUMBER_HEIGHT));
+				children.add(whiteRect(NUMBER_WIDTH - NUMBER_THICKNESS, 0, NUMBER_THICKNESS, NUMBER_HEIGHT));
+				children.add(whiteRect(0, NUMBER_HEIGHT - NUMBER_THICKNESS, NUMBER_WIDTH, NUMBER_THICKNESS));
+				break;
+			case 1:
+				children.add(whiteRect(NUMBER_WIDTH / 2 - NUMBER_THICKNESS, 0, NUMBER_THICKNESS, NUMBER_HEIGHT));
+				break;
+			case 2:
+				children.add(whiteRect(0, 0, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(NUMBER_WIDTH - NUMBER_THICKNESS, 0, NUMBER_THICKNESS, NUMBER_HEIGHT / 2));
+				children.add(whiteRect(0, NUMBER_HEIGHT / 2 - NUMBER_THICKNESS / 2, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(0, NUMBER_HEIGHT / 2, NUMBER_THICKNESS, NUMBER_HEIGHT / 2));
+				children.add(whiteRect(0, NUMBER_HEIGHT - NUMBER_THICKNESS, NUMBER_WIDTH, NUMBER_THICKNESS));
+				break;
+			case 3:
+				children.add(whiteRect(0, 0, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(0, NUMBER_HEIGHT / 2 - NUMBER_THICKNESS / 2, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(0, NUMBER_HEIGHT - NUMBER_THICKNESS, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(NUMBER_WIDTH - NUMBER_THICKNESS, 0, NUMBER_THICKNESS, NUMBER_HEIGHT));
+				break;
+			case 4:
+				children.add(whiteRect(0, 0, NUMBER_THICKNESS, NUMBER_HEIGHT / 2));
+				children.add(whiteRect(0, NUMBER_HEIGHT / 2 - NUMBER_THICKNESS / 2, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(NUMBER_WIDTH - NUMBER_THICKNESS, 0, NUMBER_THICKNESS, NUMBER_HEIGHT));
+				break;
+			case 5:
+				children.add(whiteRect(0, 0, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(0, 0, NUMBER_THICKNESS, NUMBER_HEIGHT / 2));
+				children.add(whiteRect(0, NUMBER_HEIGHT / 2 - NUMBER_THICKNESS / 2, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(NUMBER_WIDTH - NUMBER_THICKNESS, NUMBER_HEIGHT / 2, NUMBER_THICKNESS, NUMBER_HEIGHT / 2));
+				children.add(whiteRect(0, NUMBER_HEIGHT - NUMBER_THICKNESS, NUMBER_WIDTH, NUMBER_THICKNESS));
+				break;
+			case 6:
+				children.add(whiteRect(0, 0, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(0, 0, NUMBER_THICKNESS, NUMBER_HEIGHT));
+				children.add(whiteRect(0, NUMBER_HEIGHT / 2 - NUMBER_THICKNESS / 2, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(NUMBER_WIDTH - NUMBER_THICKNESS, NUMBER_HEIGHT / 2, NUMBER_THICKNESS, NUMBER_HEIGHT / 2));
+				children.add(whiteRect(0, NUMBER_HEIGHT - NUMBER_THICKNESS, NUMBER_WIDTH, NUMBER_THICKNESS));
+				break;
+			case 7:
+				children.add(whiteRect(0, 0, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(NUMBER_WIDTH - NUMBER_THICKNESS, 0, NUMBER_THICKNESS, NUMBER_HEIGHT));
+				break;
+			case 8:
+				children.add(whiteRect(0, 0, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(0, 0, NUMBER_THICKNESS, NUMBER_HEIGHT));
+				children.add(whiteRect(0, NUMBER_HEIGHT / 2 - NUMBER_THICKNESS / 2, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(NUMBER_WIDTH - NUMBER_THICKNESS, 0, NUMBER_THICKNESS, NUMBER_HEIGHT));
+				children.add(whiteRect(0, NUMBER_HEIGHT - NUMBER_THICKNESS, NUMBER_WIDTH, NUMBER_THICKNESS));
+				break;
+			case 9:
+				children.add(whiteRect(0, 0, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(0, 0, NUMBER_THICKNESS, NUMBER_HEIGHT / 2));
+				children.add(whiteRect(0, NUMBER_HEIGHT / 2 - NUMBER_THICKNESS / 2, NUMBER_WIDTH, NUMBER_THICKNESS));
+				children.add(whiteRect(NUMBER_WIDTH - NUMBER_THICKNESS, 0, NUMBER_THICKNESS, NUMBER_HEIGHT));
+				children.add(whiteRect(0, NUMBER_HEIGHT - NUMBER_THICKNESS, NUMBER_WIDTH, NUMBER_THICKNESS));
+				break;
+			default:
+				break;
+		}
+		// @formatter:on
+		return group;
 	}
 
 }
