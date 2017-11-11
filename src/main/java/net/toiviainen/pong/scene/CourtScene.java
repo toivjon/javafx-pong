@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 import static net.toiviainen.pong.PongApplication.RESOLUTION_HEIGHT;
 import static net.toiviainen.pong.PongApplication.RESOLUTION_WIDTH;
 
+import java.util.Random;
+
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
@@ -96,10 +98,12 @@ public class CourtScene extends AbstractScene {
 
 	private final Rectangle ball;
 
+	private final Random random = new Random();
+
 	private double leftPaddleYDirection;
 	private double rightPaddleYDirection;
 
-	private double ballMovementSpeed = 2.75;
+	private double ballMovementSpeed = 3.0;
 	private double ballXDirection = DIRECTION_RIGHT;
 	private double ballYDirection = DIRECTION_UP;
 
@@ -334,6 +338,29 @@ public class CourtScene extends AbstractScene {
 		// set the ball back into the middle of the scene.
 		ball.setLayoutX(RESOLUTION_WIDTH / 2 - BOX_WIDTH / 2);
 		ball.setLayoutY(RESOLUTION_HEIGHT / 2 - BOX_WIDTH / 2);
+
+		// randomise a new direction for the ball.
+		int randomValue = random.nextInt(3);
+		switch (randomValue) {
+			case 0:
+				ballXDirection = DIRECTION_LEFT;
+				ballYDirection = DIRECTION_UP;
+				break;
+			case 1:
+				ballXDirection = DIRECTION_LEFT;
+				ballYDirection = DIRECTION_DOWN;
+				break;
+			case 2:
+				ballXDirection = DIRECTION_RIGHT;
+				ballYDirection = DIRECTION_UP;
+				break;
+			case 3:
+				ballXDirection = DIRECTION_RIGHT;
+				ballYDirection = DIRECTION_DOWN;
+				break;
+			default:
+				throw new IllegalStateException("Unsupport direction random: " + randomValue);
+		}
 
 		// set paddles back into the middle of the y-axis.
 		leftPaddle.setLayoutY(RESOLUTION_HEIGHT / 2 - PADDLE_HEIGHT / 2);
