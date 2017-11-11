@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import net.toiviainen.pong.PongApplication;
+import net.toiviainen.pong.PongContext;
 import net.toiviainen.pong.util.Args;
 
 /**
@@ -100,6 +101,7 @@ public class CourtScene extends AbstractScene {
 	// ===================
 
 	private final PongApplication application;
+	private final PongContext ctx;
 
 	private final Rectangle topWall;
 	private final Rectangle bottomWall;
@@ -126,15 +128,13 @@ public class CourtScene extends AbstractScene {
 	private double ballXDirection = DIRECTION_RIGHT;
 	private double ballYDirection = DIRECTION_UP;
 
-	private int player1Score = 0;
-	private int player2Score = 0;
-
 	private int countDown = COUNTDOWN_TICKS;
 
 	public CourtScene(PongApplication application) throws NullPointerException {
 		super(new Group(), RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
 		this.application = requireNonNull(application, "The application cannot be null!");
+		this.ctx = requireNonNull(application.getContext(), "The context cannot be null!");
 
 		topWall = new Rectangle();
 		topWall.setLayoutX(0);
@@ -340,7 +340,7 @@ public class CourtScene extends AbstractScene {
 			Bounds rightGoalBounds = rightGoal.getBoundsInParent();
 
 			if (ballBounds.intersects(leftGoalBounds)) {
-				player1Score++;
+				int player1Score = ctx.incPlayer1Score();
 				if (player1Score >= 10) {
 					// move into the end game scene so we can show results.
 					Stage primaryStage = application.getPrimaryStage();
@@ -350,7 +350,7 @@ public class CourtScene extends AbstractScene {
 					reset();
 				}
 			} else if (ballBounds.intersects(rightGoalBounds)) {
-				player2Score++;
+				int player2Score = ctx.incPlayer2Score();
 				if (player2Score >= 10) {
 					// move into the end game scene so we can show results.
 					Stage primaryStage = application.getPrimaryStage();

@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import net.toiviainen.pong.PongApplication;
+import net.toiviainen.pong.PongContext;
 
 /**
  * <p>
@@ -41,6 +42,11 @@ public class EndGameScene extends AbstractScene {
 
 		requireNonNull(application, "The application cannot be null!");
 
+		// get player scores from the session context.
+		PongContext ctx = requireNonNull(application.getContext(), "The context cannot be null!");
+		int p1Score = ctx.getPlayer1Score();
+		int p2Score = ctx.getPlayer2Score();
+
 		topicText = new Text("JavaFX Pong - Results");
 		topicText.setTextOrigin(VPos.CENTER);
 		topicText.setFont(BIG_FONT);
@@ -55,7 +61,7 @@ public class EndGameScene extends AbstractScene {
 		gameHasEndedText.setLayoutY(topicText.getLayoutY() + 100);
 		gameHasEndedText.setFill(Color.WHITE);
 
-		winnerText = new Text("--- TODO ---"); // TODO when context is ready.
+		winnerText = new Text((p1Score > p2Score ? "Left" : "Right") + " player won the game!");
 		winnerText.setTextOrigin(VPos.CENTER);
 		winnerText.setFont(SMALL_FONT);
 		winnerText.setLayoutX((RESOLUTION_WIDTH - winnerText.prefWidth(-1)) / 2);
@@ -69,7 +75,7 @@ public class EndGameScene extends AbstractScene {
 		resultsTopicText.setLayoutY(winnerText.getLayoutY() + 40);
 		resultsTopicText.setFill(Color.WHITE);
 
-		resultsText = new Text("xx - xx"); // TODO when context is ready.
+		resultsText = new Text("" + ctx.getPlayer1Score() + " - " + ctx.getPlayer2Score());
 		resultsText.setTextOrigin(VPos.CENTER);
 		resultsText.setFont(SMALL_FONT);
 		resultsText.setLayoutX((RESOLUTION_WIDTH - resultsText.prefWidth(-1)) / 2);
@@ -99,7 +105,8 @@ public class EndGameScene extends AbstractScene {
 
 		setOnKeyReleased(x -> {
 			if (x.getCode() == KeyCode.ENTER) {
-				// move into the welcoming scene so we can reset the game.
+				// reset the game state and move into the welcoming scene.
+				ctx.reset();
 				Stage primaryStage = application.getPrimaryStage();
 				primaryStage.setScene(new WelcomeScene(application));
 			}

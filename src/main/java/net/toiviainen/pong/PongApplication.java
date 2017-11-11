@@ -40,6 +40,7 @@ public class PongApplication extends Application {
 
 	private Stage primaryStage;
 	private AnimationTimer mainLoop;
+	private PongContext context;
 
 	@Override
 	public void init() throws Exception {
@@ -51,6 +52,9 @@ public class PongApplication extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		// store the primary stage reference.
 		this.primaryStage = primaryStage;
+
+		// construct the context for the game.
+		context = new PongContext();
 
 		// set definitions for the primary stage.
 		primaryStage.setTitle("JavaFX - Pong");
@@ -83,6 +87,10 @@ public class PongApplication extends Application {
 
 	public Stage getPrimaryStage() {
 		return primaryStage;
+	}
+
+	public PongContext getContext() {
+		return context;
 	}
 
 	public static void main(String args[]) {
