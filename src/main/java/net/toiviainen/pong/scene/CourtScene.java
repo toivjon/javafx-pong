@@ -185,7 +185,7 @@ public class CourtScene extends AbstractScene {
 		}
 
 		ball = new Rectangle();
-		ball.setFill(Color.RED);
+		ball.setFill(Color.WHITE);
 		ball.setLayoutX(RESOLUTION_WIDTH / 2 - BOX_WIDTH / 2);
 		ball.setLayoutY(RESOLUTION_HEIGHT / 2 - BOX_WIDTH / 2);
 		ball.setWidth(BOX_WIDTH);
