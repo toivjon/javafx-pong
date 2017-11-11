@@ -61,7 +61,7 @@ public class EndGameScene extends AbstractScene {
 		gameHasEndedText.setLayoutY(topicText.getLayoutY() + 100);
 		gameHasEndedText.setFill(Color.WHITE);
 
-		winnerText = new Text((p1Score > p2Score ? "Left" : "Right") + " player won the game!");
+		winnerText = new Text((p1Score > p2Score ? "Right" : "Left") + " player won the game!");
 		winnerText.setTextOrigin(VPos.CENTER);
 		winnerText.setFont(SMALL_FONT);
 		winnerText.setLayoutX((RESOLUTION_WIDTH - winnerText.prefWidth(-1)) / 2);
@@ -75,7 +75,7 @@ public class EndGameScene extends AbstractScene {
 		resultsTopicText.setLayoutY(winnerText.getLayoutY() + 40);
 		resultsTopicText.setFill(Color.WHITE);
 
-		resultsText = new Text("" + ctx.getPlayer1Score() + " - " + ctx.getPlayer2Score());
+		resultsText = new Text("" + ctx.getPlayer2Score() + " - " + ctx.getPlayer1Score());
 		resultsText.setTextOrigin(VPos.CENTER);
 		resultsText.setFont(SMALL_FONT);
 		resultsText.setLayoutX((RESOLUTION_WIDTH - resultsText.prefWidth(-1)) / 2);
