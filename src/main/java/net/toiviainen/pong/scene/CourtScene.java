@@ -249,9 +249,11 @@ public class CourtScene extends AbstractScene {
 
 	@Override
 	public void tick() {
+		// move the ball.
 		ball.setLayoutX(ball.getLayoutX() + ballMovementSpeed * ballXDirection);
 		ball.setLayoutY(ball.getLayoutY() + ballMovementSpeed * ballYDirection);
 
+		// move the paddles if and when moved by the players.
 		leftPaddle.setLayoutY(leftPaddle.getLayoutY() + (leftPaddleYDirection * PADDLE_MOVEMENT_SPEED));
 		rightPaddle.setLayoutY(rightPaddle.getLayoutY() + (rightPaddleYDirection * PADDLE_MOVEMENT_SPEED));
 
@@ -300,14 +302,20 @@ public class CourtScene extends AbstractScene {
 
 			if (ballBounds.intersects(leftGoalBounds)) {
 				player1Score++;
-				setPlayerScore(1, player1Score);
-				reset();
-				// TODO check for the end-game state?
+				if (player1Score >= 10) {
+					// TODO end the game.
+				} else {
+					setPlayerScore(1, player1Score);
+					reset();
+				}
 			} else if (ballBounds.intersects(rightGoalBounds)) {
 				player2Score++;
-				setPlayerScore(2, player2Score);
-				reset();
-				// TODO check for the end-game state?
+				if (player2Score >= 10) {
+					// TODO end the game.
+				} else {
+					setPlayerScore(2, player2Score);
+					reset();
+				}
 			}
 		}
 	}
