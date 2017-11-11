@@ -78,6 +78,19 @@ public class CourtScene extends AbstractScene {
 	/** The thickness of a number indicator number side. */
 	private static final double NUMBER_THICKNESS = NUMBER_HEIGHT / 5;
 
+	// ==================
+	// = ball constants =
+	// ==================
+
+	/** The initial velocity of the ball movement. */
+	private static final double BALL_INITIAL_SPEED = 3.0;
+
+	/** The amount of velocity to be added to ball on each paddle collision. */
+	private static final double BALL_SPEED_INCREASE = 0.5;
+
+	/** The maximum velocity for the ball movement. */
+	private static final double BALL_MAX_SPEED = 10.0;
+
 	// ===================
 	// = class variables =
 	// ===================
@@ -103,7 +116,7 @@ public class CourtScene extends AbstractScene {
 	private double leftPaddleYDirection;
 	private double rightPaddleYDirection;
 
-	private double ballMovementSpeed = 3.0;
+	private double ballMovementSpeed = BALL_INITIAL_SPEED;
 	private double ballXDirection = DIRECTION_RIGHT;
 	private double ballYDirection = DIRECTION_UP;
 
@@ -287,10 +300,18 @@ public class CourtScene extends AbstractScene {
 			// prevent ball from invading the paddle and set a new direction.
 			ball.setLayoutX(leftPaddleBounds.getMaxX() + NUDGE);
 			ballXDirection = DIRECTION_RIGHT;
+
+			// increase the movement speed of the ball.
+			ballMovementSpeed += BALL_SPEED_INCREASE;
+			ballMovementSpeed = Math.min(ballMovementSpeed, BALL_MAX_SPEED);
 		} else if (ballBounds.intersects(rightPaddleBounds)) {
 			// prevent ball from invading the paddle and set a new direction.
 			ball.setLayoutX(rightPaddleBounds.getMinX() - ball.getWidth() - NUDGE);
 			ballXDirection = DIRECTION_LEFT;
+
+			// increase the movement speed of the ball.
+			ballMovementSpeed += BALL_SPEED_INCREASE;
+			ballMovementSpeed = Math.min(ballMovementSpeed, BALL_MAX_SPEED);
 		} else if (ballBounds.intersects(topWallBounds)) {
 			// prevent ball from invading the wall and set a new direction.
 			ball.setLayoutY(topWall.getLayoutY() + topWall.getHeight() + NUDGE);
@@ -361,6 +382,9 @@ public class CourtScene extends AbstractScene {
 			default:
 				throw new IllegalStateException("Unsupport direction random: " + randomValue);
 		}
+
+		// reset the ball movement velocity.
+		ballMovementSpeed = BALL_INITIAL_SPEED;
 
 		// set paddles back into the middle of the y-axis.
 		leftPaddle.setLayoutY(RESOLUTION_HEIGHT / 2 - PADDLE_HEIGHT / 2);
