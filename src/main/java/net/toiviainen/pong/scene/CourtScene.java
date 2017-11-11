@@ -145,11 +145,11 @@ public class CourtScene extends AbstractScene {
 		leftGoal = new Rectangle();
 		leftGoal.setLayoutX(-RESOLUTION_WIDTH);
 		leftGoal.setLayoutY(0);
-		leftGoal.setWidth(RESOLUTION_WIDTH);
+		leftGoal.setWidth(RESOLUTION_WIDTH - BOX_WIDTH);
 		leftGoal.setHeight(RESOLUTION_HEIGHT);
 
 		rightGoal = new Rectangle();
-		rightGoal.setLayoutX(RESOLUTION_WIDTH);
+		rightGoal.setLayoutX(RESOLUTION_WIDTH + BOX_WIDTH);
 		rightGoal.setLayoutY(0);
 		rightGoal.setWidth(RESOLUTION_WIDTH);
 		rightGoal.setHeight(RESOLUTION_HEIGHT);
