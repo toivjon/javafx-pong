@@ -46,6 +46,9 @@ public class CourtScene extends AbstractScene {
 	/** The amount to nudge items on a collision. */
 	private static final double NUDGE = 0.01;
 
+	/** The ticks to wait before resuming from the initial or reset state. */
+	private static int COUNTDOWN_TICKS = 50;
+
 	// ================================
 	// = movement direction constants =
 	// ================================
@@ -122,6 +125,8 @@ public class CourtScene extends AbstractScene {
 
 	private int player1Score = 0;
 	private int player2Score = 0;
+
+	private int countDown = COUNTDOWN_TICKS;
 
 	public CourtScene(PongApplication application) throws NullPointerException {
 		super(new Group(), RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
@@ -266,6 +271,12 @@ public class CourtScene extends AbstractScene {
 
 	@Override
 	public void tick() {
+		// perform only the decrement of the count down timer if it's been set.
+		if (countDown > 0) {
+			countDown--;
+			return;
+		}
+
 		// move the ball.
 		ball.setLayoutX(ball.getLayoutX() + ballMovementSpeed * ballXDirection);
 		ball.setLayoutY(ball.getLayoutY() + ballMovementSpeed * ballYDirection);
@@ -389,6 +400,9 @@ public class CourtScene extends AbstractScene {
 		// set paddles back into the middle of the y-axis.
 		leftPaddle.setLayoutY(RESOLUTION_HEIGHT / 2 - PADDLE_HEIGHT / 2);
 		rightPaddle.setLayoutY(leftPaddle.getLayoutY());
+
+		// start a count down to evaded chaotic round starts.
+		countDown = COUNTDOWN_TICKS;
 	}
 
 	/**
