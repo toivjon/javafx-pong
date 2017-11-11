@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import net.toiviainen.pong.PongApplication;
 import net.toiviainen.pong.util.Args;
 
@@ -98,6 +99,8 @@ public class CourtScene extends AbstractScene {
 	// = class variables =
 	// ===================
 
+	private final PongApplication application;
+
 	private final Rectangle topWall;
 	private final Rectangle bottomWall;
 
@@ -131,7 +134,7 @@ public class CourtScene extends AbstractScene {
 	public CourtScene(PongApplication application) throws NullPointerException {
 		super(new Group(), RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 
-		requireNonNull(application, "The application cannot be null!");
+		this.application = requireNonNull(application, "The application cannot be null!");
 
 		topWall = new Rectangle();
 		topWall.setLayoutX(0);
@@ -339,7 +342,9 @@ public class CourtScene extends AbstractScene {
 			if (ballBounds.intersects(leftGoalBounds)) {
 				player1Score++;
 				if (player1Score >= 10) {
-					// TODO end the game.
+					// move into the end game scene so we can show results.
+					Stage primaryStage = application.getPrimaryStage();
+					primaryStage.setScene(new EndGameScene(application));
 				} else {
 					setPlayerScore(1, player1Score);
 					reset();
@@ -347,7 +352,9 @@ public class CourtScene extends AbstractScene {
 			} else if (ballBounds.intersects(rightGoalBounds)) {
 				player2Score++;
 				if (player2Score >= 10) {
-					// TODO end the game.
+					// move into the end game scene so we can show results.
+					Stage primaryStage = application.getPrimaryStage();
+					primaryStage.setScene(new EndGameScene(application));
 				} else {
 					setPlayerScore(2, player2Score);
 					reset();
