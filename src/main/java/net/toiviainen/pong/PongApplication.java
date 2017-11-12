@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import net.toiviainen.pong.scene.AbstractScene;
-import net.toiviainen.pong.scene.CourtScene;
+import net.toiviainen.pong.scene.WelcomeScene;
 
 /**
  * <p>
@@ -60,8 +60,7 @@ public class PongApplication extends Application {
 		primaryStage.setTitle("JavaFX - Pong");
 		primaryStage.setResizable(false);
 		primaryStage.show();
-		// TODO primaryStage.setScene(new WelcomeScene(this));
-		primaryStage.setScene(new CourtScene(this));
+		primaryStage.setScene(new WelcomeScene(this));
 
 		// construct and start a trivial main loop for 60fps simulation.
 		mainLoop = new AnimationTimer() {
